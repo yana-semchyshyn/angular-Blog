@@ -1,0 +1,112 @@
+<header>
+    <h4>Angular Blog</h4>
+    <div>
+        <div class="btn-group" *ngIf="isSignIn">
+            <label class="btn btn-outline-success" [(ngModel)]="checkModel.left" btnCheckbox tabindex="0" role="button"
+                (click)="openModal(template)">Sign In</label>
+            <label class="btn btn-outline-primary" [(ngModel)]="checkModel.middle" btnCheckbox tabindex="0"
+                role="button" (click)="openModal(SignUp)">Sign Up</label>
+        </div>
+        <div class="btn-group" *ngIf="!isSignIn">
+            <label class="btn btn-outline-success" [(ngModel)]="checkModel.left" btnCheckbox tabindex="0" role="button"
+                (click)="openModal(AddPost)">Add post</label>
+            <label class="btn btn-warning" [(ngModel)]="checkModel.middle" btnCheckbox tabindex="0"
+                role="button">{{ userName }}</label>
+            <label class="btn btn-outline-warning" [(ngModel)]="checkModel.middle" btnCheckbox tabindex="0"
+                role="button" (click)="SignOut()">Sign Out</label>
+        </div>
+    </div>
+</header>
+<div class="container">
+    <div *ngFor="let blog of blogs; index as i">
+        <div class="card">
+            <div class="card-body">
+                <div>
+                    <h5 class="card-title">{{ blog.topic }}</h5>
+                    <div class="publicationInfo">
+                        <p class="card-title">Posted by: {{ blog.postedBy }}</p>
+                        <p class="card-title"><i class="far fa-clock"></i>{{ blog.date | date: 'HH:mm, dd.MM.yyyy' }}
+                        </p>
+                    </div>
+                    <p class="card-text">{{blog.message}}</p>
+                </div>
+                <div *ngIf="blog.postedBy == 'admin'; then adminBttns;"></div>
+                <div *ngIf="blog.postedBy != 'admin'; then userBttns"></div>
+                <ng-template #adminBttns>
+                    <div class="btn-group" *ngIf="adminStatus">
+                        <button class="btn btn-warning" (click)="edit(blog)" (click)="openModal(AddPost)">Edit</button>
+                        <button class="btn btn-danger" (click)="deletePost(blog)">Delete</button>
+                    </div>
+                </ng-template>
+                <ng-template #userBttns>
+                    <div class="btn-group" *ngIf="userStatus">
+                        <button class="btn btn-warning" (click)="edit(blog)" (click)="openModal(AddPost)">Edit</button>
+                        <button class="btn btn-danger" (click)="deletePost(blog)">Delete</button>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+    </div>
+</div>
+<ng-template #template>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">Sign In</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()"
+            (click)="resetForm()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <label for="email">Email:</label>
+        <input type="text" class="form-control" id="email" [(ngModel)]="userEmail" name="userEmail">
+        <label for="password">Password:</label>
+        <input type="password" class="form-control" id="password" [(ngModel)]="userPassword" name="userPassword">
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modalRef.hide()" (click)="resetForm()">Close</button>
+        <button type="button" class="btn btn-success" (click)="SignIn()">Submit</button>
+    </div>
+</ng-template>
+<ng-template #SignUp>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">Sign Up</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()"
+            (click)="resetForm()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <label for="newUserName">Username:</label>
+        <input type="text" class="form-control" id="newUserName" [(ngModel)]="newUserName" name="newUserName">
+        <label for="newUserEmail">Email:</label>
+        <input type="email" class="form-control" id="newUserEmail" [(ngModel)]="newUserEmail" name="newUserEmail">
+        <label for="newUserPassword">Password:</label>
+        <input type="password" class="form-control" id="newUserPassword" [(ngModel)]="newUserPassword"
+            name="newUserPassword">
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modalRef.hide()" (click)="resetForm()">Close</button>
+        <button type="button" class="btn btn-primary" (click)="addNewUser()">Submit</button>
+    </div>
+</ng-template>
+<ng-template #AddPost>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">Add post</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()"
+            (click)="resetForm()" (click)="hideEditModal()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <label for="title">Title:</label>
+        <input type="text" class="form-control" id="title" [(ngModel)]="title" name="title">
+        <label for="text">Text:</label>
+        <textarea class="form-control" id="text" rows="3" [(ngModel)]="text" name="text"></textarea>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modalRef.hide()"
+            (click)="hideEditModal()">Close</button>
+        <button type="button" class="btn btn-success" (click)="post()" *ngIf="!isEdited">Post</button>
+        <button type="button" class="btn btn-success" (click)="updatePost()" *ngIf="isEdited">Edit Post</button>
+    </div>
+</ng-template>
